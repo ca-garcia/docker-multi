@@ -1,0 +1,23 @@
+language: generic
+sudo: required
+service:
+    - docker
+
+before_install:
+    - docker build -t carlosgarciab/multi-con -f ./client/Dockerfile.dev ./client
+
+script:
+    - docker run -e CI=true multi-con npm test
+
+after_success:
+    - docker build -t carlosgarciab/multi-cli ./client
+    - docker build -t carlosgarciab/multi-ngx ./nginx
+    - docker build -t carlosgarciab/multi-srv ./server
+    - docker build -t carlosgarciab/multi-wkr ./worker
+    # Log in to Docker CLI
+    - echo "$DOCKER_PASS" | docker login -u "$DOCKER_ID" --password-stdin
+    # Push those images to Docker Hub
+    - docker push carlosgarciab/multi-cli
+    - docker push carlosgarciab/multi-ngx
+    - docker push carlosgarciab/multi-srv
+    - docker push carlosgarciab/multi-wkr

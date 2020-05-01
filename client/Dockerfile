@@ -5,7 +5,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM ngnix
+FROM nginx
 EXPOSE 3000
-COPY ./default.ngnix.conf /etc/nginx/conf.d/default.conf
+COPY ./default.nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=0 /app/build /usr/share/nginx/html
